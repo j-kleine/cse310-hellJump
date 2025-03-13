@@ -7,9 +7,14 @@ WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 650
 WINDOW_TITLE = "Hell Jumper"
 
+# Game States
+START_SCREEN = 0
+PLAYING = 1
+GAME_OVER = 2
+
 # Player
-SPRITE_SCALING_JUMPER = 1
-JUMPER_START_X = 100
+SPRITE_SCALING_JUMPER = .35
+JUMPER_START_X = 250
 JUMPER_START_Y = 550
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
 GRAVITY = 0.5 # Down movement by player (constantly when no keystroke)
@@ -19,8 +24,8 @@ SPRITE_SCALING_BARRIER = 1
 BARRIER_WIDTH = 50
 BARRIER_HEIGHT = 450
 BARRIER_GAP = 200  # Vertical gap between top and bottom barriers
-BARRIER_INTERVAL = 150 # Horizontal gap between barriers
-BARRIER_SPEED = 2  # Speed at which barriers move leftward
+BARRIER_INTERVAL = 300 # Horizontal gap between barriers
+BARRIER_SPEED = 5  # Speed at which barriers move left
 
 class Jumper(arcade.Sprite):
     """Jumper (Player) Class"""
@@ -82,6 +87,10 @@ class HellJumperGame(arcade.Window):
 
         # Setting up the game window
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+
+        # Current game state
+        self.game_state = START_SCREEN # Initializes in start screen
+        self.score = 0
         
         # Variables for sprite lists
         self.jumper_list = None
@@ -89,25 +98,21 @@ class HellJumperGame(arcade.Window):
 
         # Set up jumper info
         self.jumper_sprite = None
-        self.score = 0
 
         self.background_color = (33, 37, 43, 255)
-
-        # Interval distance for barriers
-        self.barrier_interval = 100
 
     def setup(self):
         """Set up the game and initialize variables. Called to restart the game."""
         
+        # Reset to start game state
+        self.score = 0
+
         # Sprite lists
         self.jumper_list = arcade.SpriteList()
         self.barrier_list = arcade.SpriteList()
 
-        # Score
-        self.score = 0
-
         # Set up the jumper
-        self.jumper_sprite = Jumper("assets/jumper/0.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
+        self.jumper_sprite = Jumper("assets/jumper/jumper1.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
         self.jumper_list.append(self.jumper_sprite)
 
         # Spwan the first few barriers
@@ -121,9 +126,29 @@ class HellJumperGame(arcade.Window):
         # Draw sprites
         self.jumper_list.draw()
         self.barrier_list.draw()
+
+        # Draw overlay if in START_SCREEN or GAME_OVER state
+        if self.game_state in (START_SCREEN, GAME_OVER):
+            
+            if self.game_state == START_SCREEN:
+                message = "Hell Jumper"
+            else:
+                message = "Game Over"
+
+            arcade.draw_text(message, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 30,
+                             arcade.color.WHITE, 48, anchor_x="center")
+            arcade.draw_text("Press <SPACE> to start", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 20,
+                             arcade.color.WHITE, 24, anchor_x="center")
+        
+        # Draw score count
+        arcade.draw_text(self.score // 2, 10, WINDOW_HEIGHT - 30,
+                             arcade.color.WHITE, 24)
     
     def on_update(self, delta_time):
-        """Movement and Game Logic"""
+        """Update game state if playing."""
+
+        if self.game_state != PLAYING:
+            return
 
         # Move the player and barriers
         self.jumper_list.update(delta_time)
@@ -132,21 +157,27 @@ class HellJumperGame(arcade.Window):
         # Spawn new barriers
         if len(self.barrier_list) == 0 or self.barrier_list[-1].center_x < WINDOW_WIDTH - BARRIER_INTERVAL:
             self.spawn_barrier()
+
+        # Increase the score as long as the jumper is passing barriers
+        for barrier in self.barrier_list:
+            if barrier.center_x + BARRIER_WIDTH < self.jumper_sprite.center_x and not hasattr(barrier, "scored"):
+                self.score += 1
+                barrier.scored = True  # Mark barrier as scored to avoid multiple counts
         
         # Check for collisions with barriers or top/bottom
-        if arcade.check_for_collision_with_list(self.jumper_sprite, self.barrier_list):
-            self.game_over()
-        elif self.jumper_sprite.bottom < 0:
-            self.game_over()
-        elif self.jumper_sprite.top > 650:
+        if arcade.check_for_collision_with_list(self.jumper_sprite, self.barrier_list) or self.jumper_sprite.bottom < 0 or self.jumper_sprite.top > WINDOW_HEIGHT:
             self.game_over()
 
     def on_key_press(self, key, modifiers):
-        """Called whenever jump key is pressed"""
+        """Handles jump key presses"""
 
         if key == arcade.key.SPACE:
-            self.jumper_sprite.jump()
-            # self.jumper_sprite.angle -= 8.75 # OPTIONAL ROTATION
+            if self.game_state in (START_SCREEN, GAME_OVER):
+                self.game_state = PLAYING
+                self.setup()
+            else:
+                self.jumper_sprite.jump()
+                # self.jumper_sprite.angle -= 8.75 # OPTIONAL ROTATION
 
 
     def spawn_barrier(self):
@@ -178,7 +209,7 @@ class HellJumperGame(arcade.Window):
     def game_over(self):
         """Handles game over state"""
         print("Game Over!")  # Replace this with your game over logic
-        self.setup()
+        self.game_state = GAME_OVER
 
 
 def main():
