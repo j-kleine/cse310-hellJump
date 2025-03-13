@@ -9,6 +9,8 @@ WINDOW_TITLE = "Hell Jumper"
 
 # Player
 SPRITE_SCALING_JUMPER = 1
+JUMPER_START_X = 100
+JUMPER_START_Y = 550
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
 GRAVITY = 0.5 # Down movement by player (constantly when no keystroke)
 
@@ -25,7 +27,7 @@ class Jumper(arcade.Sprite):
 
     def __init__(self, texture_path, scale, start_x, start_y):
         """Initialize the jumper"""
-        super().__init__(texture_path, scale)
+        super().__init__(texture_path, scale, start_x, start_y)
 
         # Set initial position
         self.center_x = start_x
@@ -105,7 +107,7 @@ class HellJumperGame(arcade.Window):
         self.score = 0
 
         # Set up the jumper
-        self.jumper_sprite = Jumper("assets/jumper/0.png", SPRITE_SCALING_JUMPER, 100, 325)
+        self.jumper_sprite = Jumper("assets/jumper/0.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
         self.jumper_list.append(self.jumper_sprite)
 
         # Spwan the first few barriers
@@ -131,9 +133,13 @@ class HellJumperGame(arcade.Window):
         if len(self.barrier_list) == 0 or self.barrier_list[-1].center_x < WINDOW_WIDTH - BARRIER_INTERVAL:
             self.spawn_barrier()
         
-        # Check for collisions with barriers
-        # if arcade.check_for_collision_with_list(self.jumper_sprite, self.barrier_list):
-            # print("Game Over!")  # Replace this with your game over logic
+        # Check for collisions with barriers or top/bottom
+        if arcade.check_for_collision_with_list(self.jumper_sprite, self.barrier_list):
+            self.game_over()
+        elif self.jumper_sprite.bottom < 0:
+            self.game_over()
+        elif self.jumper_sprite.top > 650:
+            self.game_over()
 
     def on_key_press(self, key, modifiers):
         """Called whenever jump key is pressed"""
@@ -147,14 +153,14 @@ class HellJumperGame(arcade.Window):
         """Spawns a new barrier with a random gap position"""
 
         # Generate random y-offset for bottom barrier
-        random_y_offset = random.randint(50, 400)
+        random_y_offset = random.randrange(-200, 200, 10)
         
         # Create top and bottom barriers
         bottom_barrier = Barrier(
             "assets/terrain/1.png",
             SPRITE_SCALING_BARRIER, 
             WINDOW_WIDTH + BARRIER_WIDTH, 
-            BARRIER_HEIGHT // 2 - random_y_offset, 
+            random_y_offset, 
             BARRIER_WIDTH, 
             BARRIER_HEIGHT
             )
@@ -162,12 +168,18 @@ class HellJumperGame(arcade.Window):
             "assets/terrain/2.png", 
             SPRITE_SCALING_BARRIER, 
             WINDOW_WIDTH + BARRIER_WIDTH, 
-            BARRIER_HEIGHT * 1.5 + BARRIER_GAP - random_y_offset, 
+            bottom_barrier.center_y + BARRIER_GAP + BARRIER_HEIGHT, 
             BARRIER_WIDTH, 
             BARRIER_HEIGHT)
 
         self.barrier_list.append(bottom_barrier)
         self.barrier_list.append(top_barrier)
+    
+    def game_over(self):
+        """Handles game over state"""
+        print("Game Over!")  # Replace this with your game over logic
+        self.setup()
+
 
 def main():
     """Main function"""
