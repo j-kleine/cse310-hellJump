@@ -103,6 +103,8 @@ class HellJumperGame(arcade.Window):
 
     def setup(self):
         """Set up the game and initialize variables. Called to restart the game."""
+
+        self.set_mouse_visible(False)
         
         # Reset to start game state
         self.score = 0
@@ -129,6 +131,8 @@ class HellJumperGame(arcade.Window):
 
         # Draw overlay if in START_SCREEN or GAME_OVER state
         if self.game_state in (START_SCREEN, GAME_OVER):
+
+            self.set_mouse_visible(True)
             
             if self.game_state == START_SCREEN:
                 message = "Hell Jumper"
@@ -178,6 +182,15 @@ class HellJumperGame(arcade.Window):
             else:
                 self.jumper_sprite.jump()
                 # self.jumper_sprite.angle -= 8.75 # OPTIONAL ROTATION
+
+    def on_mouse_press(self, x, y, button, modifiers): 
+        """Handles mouse-click for jump"""
+
+        if self.game_state in (START_SCREEN, GAME_OVER):
+            self.game_state = PLAYING
+            self.setup()
+        else:
+            self.jumper_sprite.jump()
 
 
     def spawn_barrier(self):
