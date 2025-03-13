@@ -13,7 +13,7 @@ PLAYING = 1
 GAME_OVER = 2
 
 # Player
-SPRITE_SCALING_JUMPER = .35
+SPRITE_SCALING_JUMPER = .45
 JUMPER_START_X = 250
 JUMPER_START_Y = 550
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
@@ -99,6 +99,9 @@ class HellJumperGame(arcade.Window):
         # Set up jumper info
         self.jumper_sprite = None
 
+        # Set up background image
+        self.background_list = None
+
         self.background_color = (33, 37, 43, 255)
 
     def setup(self):
@@ -110,8 +113,14 @@ class HellJumperGame(arcade.Window):
         self.score = 0
 
         # Sprite lists
+        self.background_list = arcade.SpriteList()
         self.jumper_list = arcade.SpriteList()
         self.barrier_list = arcade.SpriteList()
+
+        self.background_sprite = arcade.Sprite("assets/terrain/background3.png")
+        self.background_sprite.center_x = WINDOW_WIDTH // 2
+        self.background_sprite.center_y = WINDOW_HEIGHT // 2
+        self.background_list.append(self.background_sprite)
 
         # Set up the jumper
         self.jumper_sprite = Jumper("assets/jumper/jumper1.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
@@ -126,6 +135,7 @@ class HellJumperGame(arcade.Window):
         self.clear()
         
         # Draw sprites
+        self.background_list.draw()
         self.jumper_list.draw()
         self.barrier_list.draw()
 
@@ -201,7 +211,7 @@ class HellJumperGame(arcade.Window):
         
         # Create top and bottom barriers
         bottom_barrier = Barrier(
-            "assets/terrain/1.png",
+            "assets/terrain/barrier_bottom.png",
             SPRITE_SCALING_BARRIER, 
             WINDOW_WIDTH + BARRIER_WIDTH, 
             random_y_offset, 
@@ -209,7 +219,7 @@ class HellJumperGame(arcade.Window):
             BARRIER_HEIGHT
             )
         top_barrier = Barrier(
-            "assets/terrain/2.png", 
+            "assets/terrain/barrier_top.png", 
             SPRITE_SCALING_BARRIER, 
             WINDOW_WIDTH + BARRIER_WIDTH, 
             bottom_barrier.center_y + BARRIER_GAP + BARRIER_HEIGHT, 
