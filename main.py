@@ -105,6 +105,10 @@ class HellJumperGame(arcade.Window):
 
         self.background_color = (33, 37, 43, 255)
 
+        # Set up background music variables
+        self.background_music = arcade.load_sound("assets/backgroundMusic.mp3")
+        arcade.play_sound(self.background_music, volume=0.1, loop=True)
+
     def setup(self):
         """Set up the game and initialize variables. Called to restart the game."""
 
@@ -149,6 +153,8 @@ class HellJumperGame(arcade.Window):
                 message = "HELLJUMPER"
             else:
                 message = "MISSION FAILED"
+
+            arcade.draw_lrbt_rectangle_filled(5, 595, 250, 410, (0, 0, 0, 155))
 
             arcade.draw_text(message, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
                              arcade.color.WHITE, 64, bold=True, anchor_x="center")
