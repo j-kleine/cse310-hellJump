@@ -13,7 +13,7 @@ PLAYING = 1
 GAME_OVER = 2
 
 # Player
-SPRITE_SCALING_JUMPER = .35
+SPRITE_SCALING_JUMPER = .3
 JUMPER_START_X = 250
 JUMPER_START_Y = 450
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
@@ -21,7 +21,7 @@ GRAVITY = 0.5 # Down movement by player (constantly when no keystroke)
 
 # Obstacles
 SPRITE_SCALING_BARRIER = 1
-BARRIER_WIDTH = 50
+BARRIER_WIDTH = 150
 BARRIER_HEIGHT = 450
 BARRIER_GAP = 200  # Vertical gap between top and bottom barriers
 BARRIER_INTERVAL = 300 # Horizontal gap between barriers
