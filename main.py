@@ -13,7 +13,7 @@ PLAYING = 1
 GAME_OVER = 2
 
 # Player
-SPRITE_SCALING_JUMPER = .45
+SPRITE_SCALING_JUMPER = .35
 JUMPER_START_X = 250
 JUMPER_START_Y = 550
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
@@ -25,7 +25,8 @@ BARRIER_WIDTH = 50
 BARRIER_HEIGHT = 450
 BARRIER_GAP = 200  # Vertical gap between top and bottom barriers
 BARRIER_INTERVAL = 300 # Horizontal gap between barriers
-BARRIER_SPEED = 5  # Speed at which barriers move left
+BARRIER_BASE_SPEED = 5  # Speed at which barriers move left
+BARRIER_SPEED_INCREASE = 0.1  # Speed at which barriers move left
 
 class Jumper(arcade.Sprite):
     """Jumper (Player) Class"""
@@ -163,6 +164,10 @@ class HellJumperGame(arcade.Window):
 
         if self.game_state != PLAYING:
             return
+        
+        # Dynamic barrier speed adjustment
+        global BARRIER_SPEED
+        BARRIER_SPEED = BARRIER_BASE_SPEED + (self.score // 2) * BARRIER_SPEED_INCREASE
 
         # Move the player and barriers
         self.jumper_list.update(delta_time)
