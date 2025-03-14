@@ -56,7 +56,13 @@ class Jumper(arcade.Sprite):
     
     def jump(self):
         """Handles jump behaviors"""
+        
+        # Set up jumps sound
+        self.jump_sound = arcade.load_sound("assets/jumpSound.wav")
+        
         self.change_y = JUMP_STRENGTH
+        arcade.play_sound(self.jump_sound, volume=1, loop=False)
+        
 
 class Barrier(arcade.Sprite):
     """Barrier Class"""
@@ -107,7 +113,7 @@ class HellJumperGame(arcade.Window):
 
         # Set up background music variables
         self.background_music = arcade.load_sound("assets/backgroundMusic.mp3")
-        arcade.play_sound(self.background_music, volume=0.1, loop=True)
+        arcade.play_sound(self.background_music, volume=0.01, loop=True)
 
     def setup(self):
         """Set up the game and initialize variables. Called to restart the game."""
