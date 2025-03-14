@@ -134,7 +134,12 @@ class HellJumperGame(arcade.Window):
         self.background_list.append(self.background_sprite)
 
         # Load the jumper
-        self.jumper_sprite = Jumper("assets/jumper/jumper1.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
+        self.jumper_sprite = Jumper(
+            "assets/jumper/jumper1.png", 
+            SPRITE_SCALING_JUMPER, 
+            JUMPER_START_X, 
+            JUMPER_START_Y
+            )
         self.jumper_list.append(self.jumper_sprite)
 
         # Spwan the first few barriers
