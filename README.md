@@ -10,11 +10,11 @@ As a software engineer, this project allowed me to gain hands-on experience with
 
 # Development Environment
 
-IDE: VS Code
+IDE: [VS Code](https://code.visualstudio.com/download)
 
-Graphics Editor: paint.net
+Graphics Editor: [paint.net](https://www.getpaint.net/)
 
-Programming Language: Python (Arcade Library)
+Programming Language: [Python (Arcade Library)](https://api.arcade.academy/en/latest/)
 
 # Useful Websites
 
