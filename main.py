@@ -17,7 +17,7 @@ SPRITE_SCALING_JUMPER = .3
 JUMPER_START_X = 250
 JUMPER_START_Y = 450
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
-GRAVITY = 0.5 # Down movement by player (constantly when no keystroke)
+GRAVITY = 0.5 # Down movement of player (constantly when no keystroke)
 
 # Obstacles
 SPRITE_SCALING_BARRIER = 1
@@ -35,11 +35,11 @@ class Jumper(arcade.Sprite):
         """Initialize the jumper"""
         super().__init__(texture_path, scale, start_x, start_y)
 
-        # Set initial position
+        # Set initial starting position
         self.center_x = start_x
         self.center_y = start_y
 
-        # Velocity attributes
+        # Velocity attribute
         self.change_y = 0
 
     def update(self, delta_time: float = 1/60):
@@ -47,9 +47,6 @@ class Jumper(arcade.Sprite):
 
         # Apply gravity
         self.change_y -= GRAVITY
-        # self.angle += 0.35 # OPTIONAL ROTATION
-        # if self.angle > 359:
-        #     self.angle -= 360
 
         # Apply Movement
         self.center_y += self.change_y
@@ -60,6 +57,7 @@ class Jumper(arcade.Sprite):
         # Set up jumps sound
         self.jump_sound = arcade.load_sound("assets/jumpSound.wav")
         
+        # Apply jump action (add jump strength to y-movement) and play sound effect with it
         self.change_y = JUMP_STRENGTH
         arcade.play_sound(self.jump_sound, volume=1, loop=False)
         
@@ -76,6 +74,8 @@ class Barrier(arcade.Sprite):
     
     def update(self, delta_time: float = 1/60):
         """Move the barrier"""
+
+        # Constant movement speed (and direction)
         self.center_x -= BARRIER_SPEED
 
         # Remove the barrier when it moves off-screen
@@ -103,22 +103,21 @@ class HellJumperGame(arcade.Window):
         self.jumper_list = None
         self.barrier_list = None
 
-        # Set up jumper info
+        # Set up jumper variable
         self.jumper_sprite = None
 
-        # Set up background image
+        # Set up background image variable
         self.background_list = None
+        self.background_color = (33, 37, 43, 255) # Backup background color
 
-        self.background_color = (33, 37, 43, 255)
-
-        # Set up background music variables
+        # Set up background music variables and play sound on game launch
         self.background_music = arcade.load_sound("assets/backgroundMusic.mp3")
         arcade.play_sound(self.background_music, volume=0.01, loop=True)
 
     def setup(self):
         """Set up the game and initialize variables. Called to restart the game."""
 
-        self.set_mouse_visible(False)
+        self.set_mouse_visible(False) # Hide mouse while playing
         
         # Reset to start game state
         self.score = 0
@@ -128,12 +127,13 @@ class HellJumperGame(arcade.Window):
         self.jumper_list = arcade.SpriteList()
         self.barrier_list = arcade.SpriteList()
 
+        # Load background image
         self.background_sprite = arcade.Sprite("assets/terrain/background3.png")
         self.background_sprite.center_x = WINDOW_WIDTH // 2
         self.background_sprite.center_y = WINDOW_HEIGHT // 2
         self.background_list.append(self.background_sprite)
 
-        # Set up the jumper
+        # Load the jumper
         self.jumper_sprite = Jumper("assets/jumper/jumper1.png", SPRITE_SCALING_JUMPER, JUMPER_START_X, JUMPER_START_Y)
         self.jumper_list.append(self.jumper_sprite)
 
@@ -143,9 +143,10 @@ class HellJumperGame(arcade.Window):
     def on_draw(self):
         """ Render the screen. """
 
+        # Reset game view
         self.clear()
         
-        # Draw sprites
+        # Draw sprite lists
         self.background_list.draw()
         self.jumper_list.draw()
         self.barrier_list.draw()
@@ -153,23 +154,23 @@ class HellJumperGame(arcade.Window):
         # Draw overlay if in START_SCREEN or GAME_OVER state
         if self.game_state in (START_SCREEN, GAME_OVER):
 
-            self.set_mouse_visible(True)
+            self.set_mouse_visible(True) # Display mouse while start and game over screens are visible
             
+            # Choose overlay text depending on current game state
             if self.game_state == START_SCREEN:
                 message = "HELLJUMPER"
             else:
                 message = "MISSION FAILED"
 
-            arcade.draw_lrbt_rectangle_filled(5, 595, 250, 410, (0, 0, 0, 155))
+            arcade.draw_lrbt_rectangle_filled(5, 595, 250, 410, (0, 0, 0, 155)) # Draw overlay background
 
             arcade.draw_text(message, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
-                             arcade.color.WHITE, 64, bold=True, anchor_x="center")
+                             arcade.color.WHITE, 64, bold=True, anchor_x="center") # Draw title/game over text
             arcade.draw_text("Press <SPACE> to start", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 50,
-                             arcade.color.WHITE, 32, anchor_x="center")
+                             arcade.color.WHITE, 32, anchor_x="center") # Draw instructions text
         
-        # Draw score count
         arcade.draw_text(self.score // 2, WINDOW_WIDTH / 2, WINDOW_HEIGHT - 60,
-                             arcade.color.WHITE, 48, bold=True, anchor_x="center")
+                             arcade.color.WHITE, 48, bold=True, anchor_x="center") # Draw score count
     
     def on_update(self, delta_time):
         """Update game state if playing."""
@@ -181,7 +182,7 @@ class HellJumperGame(arcade.Window):
         global BARRIER_SPEED
         BARRIER_SPEED = BARRIER_BASE_SPEED + (self.score // 2) * BARRIER_SPEED_INCREASE
 
-        # Move the player and barriers
+        # Apply player and barrier movement
         self.jumper_list.update(delta_time)
         self.barrier_list.update()
 
@@ -202,14 +203,15 @@ class HellJumperGame(arcade.Window):
     def on_key_press(self, key, modifiers):
         """Handles jump key presses"""
 
+        # Use key press for either start game or jump action, depending on current game state
         if key == arcade.key.SPACE or key == arcade.key.UP:
             if self.game_state in (START_SCREEN, GAME_OVER):
                 self.game_state = PLAYING
                 self.setup()
             else:
                 self.jumper_sprite.jump()
-                # self.jumper_sprite.angle -= 8.75 # OPTIONAL ROTATION
 
+    # Use mouse click for either start game or jump action, depending on current game state
     def on_mouse_press(self, x, y, button, modifiers): 
         """Handles mouse-click for jump"""
 
@@ -226,7 +228,7 @@ class HellJumperGame(arcade.Window):
         # Generate random y-offset for bottom barrier
         random_y_offset = random.randrange(-200, 200, 10)
         
-        # Create top and bottom barriers
+        # Set top and bottom barriers
         bottom_barrier = Barrier(
             "assets/terrain/barrier_bottom.png",
             SPRITE_SCALING_BARRIER, 
@@ -248,7 +250,7 @@ class HellJumperGame(arcade.Window):
     
     def game_over(self):
         """Handles game over state"""
-        print("Game Over!")  # Replace this with your game over logic
+        # print("Game Over!")
         self.game_state = GAME_OVER
 
 
