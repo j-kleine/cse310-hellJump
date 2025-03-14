@@ -5,7 +5,7 @@ import random
 # Screen
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 650
-WINDOW_TITLE = "Hell Jumper"
+WINDOW_TITLE = "HELLJUMPER"
 
 # Game States
 START_SCREEN = 0
@@ -15,7 +15,7 @@ GAME_OVER = 2
 # Player
 SPRITE_SCALING_JUMPER = .35
 JUMPER_START_X = 250
-JUMPER_START_Y = 550
+JUMPER_START_Y = 450
 JUMP_STRENGTH = 7.5 # Up movement by player on keystroke
 GRAVITY = 0.5 # Down movement by player (constantly when no keystroke)
 
@@ -146,18 +146,18 @@ class HellJumperGame(arcade.Window):
             self.set_mouse_visible(True)
             
             if self.game_state == START_SCREEN:
-                message = "Hell Jumper"
+                message = "HELLJUMPER"
             else:
-                message = "Game Over"
+                message = "MISSION FAILED"
 
-            arcade.draw_text(message, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 30,
-                             arcade.color.WHITE, 48, anchor_x="center")
-            arcade.draw_text("Press <SPACE> to start", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 20,
-                             arcade.color.WHITE, 24, anchor_x="center")
+            arcade.draw_text(message, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
+                             arcade.color.WHITE, 64, bold=True, anchor_x="center")
+            arcade.draw_text("Press <SPACE> to start", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 50,
+                             arcade.color.WHITE, 32, anchor_x="center")
         
         # Draw score count
-        arcade.draw_text(self.score // 2, 10, WINDOW_HEIGHT - 30,
-                             arcade.color.WHITE, 24)
+        arcade.draw_text(self.score // 2, WINDOW_WIDTH / 2, WINDOW_HEIGHT - 60,
+                             arcade.color.WHITE, 48, bold=True, anchor_x="center")
     
     def on_update(self, delta_time):
         """Update game state if playing."""
@@ -190,7 +190,7 @@ class HellJumperGame(arcade.Window):
     def on_key_press(self, key, modifiers):
         """Handles jump key presses"""
 
-        if key == arcade.key.SPACE:
+        if key == arcade.key.SPACE or key == arcade.key.UP:
             if self.game_state in (START_SCREEN, GAME_OVER):
                 self.game_state = PLAYING
                 self.setup()
