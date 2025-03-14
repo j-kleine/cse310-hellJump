@@ -11,6 +11,7 @@ As a software engineer, this project allowed me to gain hands-on experience with
 # Development Environment
 
 IDE: VS Code
+
 Graphics Editor: paint.net
 
 Programming Language: Python (Arcade Library)
@@ -23,7 +24,7 @@ Programming Language: Python (Arcade Library)
 
 # Future Work
 
-* Overhaul the start and game over screen (different fonts, colors, ...)
-* Swap out the current assets for high-quality, high-resolution graphics
-* Implement a score tracking system and additional difficulty levels (more than just the current barrier speed increase based on the players score)
-* Fine tune the background music and the jump sound effect, potentially add more sound effects and control/mute buttons
+* Overhaul the start and game over screen (different fonts, colors, ...).
+* Swap out the current assets for high-quality, high-resolution graphics.
+* Implement a score tracking system and additional difficulty levels (more than just the current barrier speed increase based on the players score).
+* Fine tune the background music and the jump sound effect, potentially add more sound effects and control/mute buttons.
